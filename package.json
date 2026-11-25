@@ -1,0 +1,26 @@
+{
+  "name": "radis-node",
+  "version": "0.1.1",
+  "description": "Official Node.js remote SDK for the Radis cache API",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "radis",
+    "cache",
+    "redis",
+    "nodejs",
+    "sdk"
+  ],
+  "license": "MIT"
+}
