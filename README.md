@@ -16,7 +16,7 @@ npm install radis-node
 Until the package is published, install from the local folder or a Git repository:
 
 ```bash
-npm install github:YOUR_GITHUB_USERNAME/radis-node
+npm install github:Shubham0601y/radis-node
 ```
 
 ## Configure
@@ -59,23 +59,23 @@ await myCache.del("user:101");
 
 ### Available methods
 
-| Method | Result / behavior |
-|---|---|
-| `set(key, value, ttl = 0)` | Store a JSON-serializable value |
-| `get(key)` | Value, or `null` if missing |
-| `getWithMetadata(key)` | `{ key, value, ttl }`, or `null` if missing |
-| `del(key)` / `delete(key)` | `true` if deleted, otherwise `false` |
-| `exists(key)` | Boolean |
-| `type(key)` | Type string returned by the API |
-| `ttl(key)` | `null` missing, `0` persistent, otherwise remaining seconds |
-| `persist(key)` | Remove expiration |
-| `rename(key, newKey)` | Rename a key |
-| `copy(key, newKey)` | Copy a key |
-| `mset(values, ttl = 0)` | Set multiple key/value pairs with one TTL |
-| `mget(keys)` | Array of records returned by the API |
-| `mdel(keys)` | Number of keys deleted |
-| `expireMultiple(keys, ttl)` | Set expiration on multiple keys |
-| `entries()` | Current tenant's entries returned by the API |
+| Method                      | Result / behavior                                           |
+| --------------------------- | ----------------------------------------------------------- |
+| `set(key, value, ttl = 0)`  | Store a JSON-serializable value                             |
+| `get(key)`                  | Value, or `null` if missing                                 |
+| `getWithMetadata(key)`      | `{ key, value, ttl }`, or `null` if missing                 |
+| `del(key)` / `delete(key)`  | `true` if deleted, otherwise `false`                        |
+| `exists(key)`               | Boolean                                                     |
+| `type(key)`                 | Type string returned by the API                             |
+| `ttl(key)`                  | `null` missing, `0` persistent, otherwise remaining seconds |
+| `persist(key)`              | Remove expiration                                           |
+| `rename(key, newKey)`       | Rename a key                                                |
+| `copy(key, newKey)`         | Copy a key                                                  |
+| `mset(values, ttl = 0)`     | Set multiple key/value pairs with one TTL                   |
+| `mget(keys)`                | Array of records returned by the API                        |
+| `mdel(keys)`                | Number of keys deleted                                      |
+| `expireMultiple(keys, ttl)` | Set expiration on multiple keys                             |
+| `entries()`                 | Current tenant's entries returned by the API                |
 
 ### Multiple values
 
