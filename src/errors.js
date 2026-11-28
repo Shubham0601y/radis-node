@@ -1,14 +1,8 @@
 export class RadisError extends Error {
-  constructor(
-    message,
-    { status = null, code = null, details = null, cause, error = null } = {},
-  ) {
+  constructor(message, { status = null, cause, error = null } = {}) {
     super(message, cause ? { cause } : undefined);
 
     this.name = "RadisError";
-    this.status = status;
-    this.code = code;
-    this.details = details;
     this.error = error;
 
     if (cause) {

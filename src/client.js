@@ -60,14 +60,9 @@ export class Radis {
       }
 
       if (!response.ok || payload?.success === false) {
-        throw new RadisError(
-          payload?.message || `Radis API request failed with status ${response.status}`,
-          {
-            status: response.status,
-            code: payload?.code ?? null,
-            details: payload?.details ?? payload?.data ?? null,
-          },
-        );
+        throw new RadisError(payload?.message || "Radis request failed", {
+          payload,
+        });
       }
 
       return payload;
@@ -75,11 +70,15 @@ export class Radis {
       if (error instanceof RadisError) throw error;
       if (error?.name === "AbortError") {
         throw new RadisNetworkError(
-          signal?.aborted ? "Radis request was aborted" : `Radis request timed out after ${this.timeout}ms`,
+          signal?.aborted
+            ? "Radis request was aborted"
+            : `Radis request timed out after ${this.timeout}ms`,
           { cause: error },
         );
       }
-      throw new RadisNetworkError("Unable to reach the Radis API", { cause: error });
+      throw new RadisNetworkError("Unable to reach the Radis API", {
+        cause: error,
+      });
     } finally {
       clearTimeout(timeoutId);
       signal?.removeEventListener("abort", abortFromCaller);
@@ -90,7 +89,9 @@ export class Radis {
     this.#validateKey(key);
     this.#validateTTL(ttl);
     const result = await this.request("/set", {
-      method: "POST", body: { key, value, ttl }, signal: options.signal,
+      method: "POST",
+      body: { key, value, ttl },
+      signal: options.signal,
     });
     return result?.data ?? true;
   }
@@ -103,41 +104,52 @@ export class Radis {
   /** Returns { key, value, ttl }, or null when the key is missing. */
   async getWithMetadata(key, options = {}) {
     this.#validateKey(key);
-    const result = await this.request(`/get/${encodeURIComponent(key)}`, { signal: options.signal });
+    const result = await this.request(`/get/${encodeURIComponent(key)}`, {
+      signal: options.signal,
+    });
     return result?.data ?? null;
   }
 
   async del(key, options = {}) {
     this.#validateKey(key);
     const result = await this.request(`/delete/${encodeURIComponent(key)}`, {
-      method: "DELETE", signal: options.signal,
+      method: "DELETE",
+      signal: options.signal,
     });
     return Boolean(result?.data);
   }
 
   async exists(key, options = {}) {
     this.#validateKey(key);
-    const result = await this.request(`/exists/${encodeURIComponent(key)}`, { signal: options.signal });
+    const result = await this.request(`/exists/${encodeURIComponent(key)}`, {
+      signal: options.signal,
+    });
     return Boolean(result?.data);
   }
 
   async type(key, options = {}) {
     this.#validateKey(key);
-    const result = await this.request(`/type/${encodeURIComponent(key)}`, { signal: options.signal });
+    const result = await this.request(`/type/${encodeURIComponent(key)}`, {
+      signal: options.signal,
+    });
     return result?.data ?? "none";
   }
 
   /** Returns remaining TTL in seconds: null=missing, 0=no expiration, >0=seconds remaining. */
   async ttl(key, options = {}) {
     this.#validateKey(key);
-    const result = await this.request(`/ttl/${encodeURIComponent(key)}`, { signal: options.signal });
+    const result = await this.request(`/ttl/${encodeURIComponent(key)}`, {
+      signal: options.signal,
+    });
     return result?.data ?? null;
   }
 
   async persist(key, options = {}) {
     this.#validateKey(key);
     const result = await this.request("/persist", {
-      method: "POST", body: { key }, signal: options.signal,
+      method: "POST",
+      body: { key },
+      signal: options.signal,
     });
     return Boolean(result?.data);
   }
@@ -146,7 +158,9 @@ export class Radis {
     this.#validateKey(key);
     this.#validateKey(newKey);
     const result = await this.request("/rename", {
-      method: "POST", body: { key, newKey }, signal: options.signal,
+      method: "POST",
+      body: { key, newKey },
+      signal: options.signal,
     });
     return Boolean(result?.data);
   }
@@ -155,19 +169,30 @@ export class Radis {
     this.#validateKey(key);
     this.#validateKey(newKey);
     const result = await this.request("/copy", {
-      method: "POST", body: { key, newKey }, signal: options.signal,
+      method: "POST",
+      body: { key, newKey },
+      signal: options.signal,
     });
     return Boolean(result?.data);
   }
 
   async mset(values, ttl = 0, options = {}) {
-    if (!values || typeof values !== "object" || Array.isArray(values) || Object.keys(values).length === 0) {
-      throw new TypeError("values must be a non-empty object of key-value pairs");
+    if (
+      !values ||
+      typeof values !== "object" ||
+      Array.isArray(values) ||
+      Object.keys(values).length === 0
+    ) {
+      throw new TypeError(
+        "values must be a non-empty object of key-value pairs",
+      );
     }
     Object.keys(values).forEach((key) => this.#validateKey(key));
     this.#validateTTL(ttl);
     const result = await this.request("/set-multiple", {
-      method: "POST", body: { values, ttl }, signal: options.signal,
+      method: "POST",
+      body: { values, ttl },
+      signal: options.signal,
     });
     return Boolean(result?.data);
   }
@@ -176,7 +201,9 @@ export class Radis {
   async mget(keys, options = {}) {
     this.#validateKeys(keys);
     const result = await this.request("/get-multiple", {
-      method: "POST", body: { keys }, signal: options.signal,
+      method: "POST",
+      body: { keys },
+      signal: options.signal,
     });
     return result?.data ?? [];
   }
@@ -185,7 +212,9 @@ export class Radis {
   async mdel(keys, options = {}) {
     this.#validateKeys(keys);
     const result = await this.request("/delete-multiple", {
-      method: "DELETE", body: { keys }, signal: options.signal,
+      method: "DELETE",
+      body: { keys },
+      signal: options.signal,
     });
     return Number(result?.data ?? 0);
   }
@@ -193,9 +222,12 @@ export class Radis {
   async expireMultiple(keys, ttl, options = {}) {
     this.#validateKeys(keys);
     this.#validateTTL(ttl);
-    if (ttl === 0) throw new TypeError("ttl must be greater than 0 for expireMultiple");
+    if (ttl === 0)
+      throw new TypeError("ttl must be greater than 0 for expireMultiple");
     const result = await this.request("/expire-multiple", {
-      method: "POST", body: { keys, ttl }, signal: options.signal,
+      method: "POST",
+      body: { keys, ttl },
+      signal: options.signal,
     });
     return Boolean(result?.data);
   }
